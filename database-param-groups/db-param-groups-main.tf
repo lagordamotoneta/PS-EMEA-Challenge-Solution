@@ -176,6 +176,7 @@ resource "aws_rds_cluster_parameter_group" "appd-db-cluster-parameter-group" {
 
 }
 
+#We made available the created resources' ids as outputs for them to be available in the root module
 output "db_param_group_id" {
     value = aws_db_parameter_group.appd-db-parameter-group.id
 }

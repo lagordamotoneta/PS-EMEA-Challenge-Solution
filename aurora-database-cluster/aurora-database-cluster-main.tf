@@ -26,12 +26,10 @@ output "rds_cluster_endpoint" {
 
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
-  #identifier         = "${var.db_cluster_name}-${count.index}"
   identifier = "appd-database-instance"
   count              = 1
   cluster_identifier = aws_rds_cluster.default.id
   instance_class     = "db.t2.small"
-  #  multi_az           = true
   engine = "aurora-mysql"
   engine_version          = "5.7.12"
   db_parameter_group_name = var.db_param_group_name
@@ -43,6 +41,7 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
 
 }
 
+#We made available the created resources' ids as outputs for them to be available in the root module
 output "database_endpoint" {
     value = aws_rds_cluster.default.endpoint
 }

@@ -2,8 +2,24 @@
 #---------------EC2 Instance-------------------------------------------
 #--------------------------------------------------------------------------------
 
+#We need to filter the AMI that we are going to use for the EC2 instance that will host the platform!
+#This is convenint so we don't hardcore an image id
+data "aws_ami" "filteredAMI" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-*-x86_64-gp2"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+}
+
+
 data "template_file" "installer" {
-  #depends_on = [module.appd-aurora-database-cluster]
   template = file("./initializeArtifacts.sh")
   vars={
     db_endpoint = "${var.database_endpoint}"
@@ -12,13 +28,12 @@ data "template_file" "installer" {
 
 resource "aws_instance" "appd-platform" {
   
-  ami                    = "ami-03ac5a9b225e99b02"
+  ami                    = data.aws_ami.filteredAMI.id
   instance_type          = var.ec2_instance_type
   key_name               = var.ec2_key_name
   vpc_security_group_ids = [var.instance_sec_group_id]
-  #user_data              = "${file("downloadInstaller.sh")}"
   user_data              = data.template_file.installer.rendered
-  #user_data              = "#!/bin/bash \n lblblb > testfile.out \n sudo yum install curl \n curl -L -o \"/home/ec2-user/platform-setup-x64-linux-21.4.3.24599.sh\" -O https://download-files.appdynamics.com/download-file/enterprise-console/21.4.3.24599/platform-setup-x64-linux-21.4.3.24599.sh > curlResult.txt"
+  
   
   
   # Copy in the bash script we want to execute.
@@ -30,17 +45,12 @@ resource "aws_instance" "appd-platform" {
     destination = "/home/ec2-user/installation.sh"
   }
 
-  #A licence file
+  #Copy the licence file
   provisioner "file" {
     source      = "./license.lic"
     destination = "/home/ec2-user/license.lic"
   }
-  # # Change permissions on bash script and execute from ec2-user.
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sed 's/serverHostName=/serverHostName=${self.private_dns}/'",
-  #   ]
-  # }
+  #We need to stablish a connection with the EC2 instance to provision the machine with the needed files
     connection {
     type        = "ssh"
     user        = "ec2-user"
@@ -59,6 +69,7 @@ resource "aws_instance" "appd-platform" {
 
 }
 
+#We made available the created resources' ids as outputs for them to be available in the root module
 
 output "appd-platform_ip" {
   value = aws_instance.appd-platform.public_ip

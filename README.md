@@ -21,7 +21,7 @@ Install an AppDynamics controller using Terraform and [AppDynamics AWS controlle
     * key_name = "<the name of your key as it appears in AWS, this is for the EC2 instance creation reference>"
     * key_file = "<the location of the actual .pem file of your key, this can be in the local Terraform folder (you will need to cc it)>"
 4. Run:
-    * ```console terraform init``` - To initialize the Terraform providers.
+    * ```terraform init``` - To initialize the Terraform providers.
     * ```terraform plan``` - 9 resources are planned
     * ```terraform apply``` - 9 resources are created
 5. Once the terraform apply is done (after 6-7 minutes), you can log into your AWS terminal and monitor the status of your new EC2 instance. You must wait until the "Status Check" field changes from *"Creating"* to *"2-2 Checks passed"*.

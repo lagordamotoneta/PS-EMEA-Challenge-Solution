@@ -47,4 +47,4 @@ This entry means that the EC, platform and controller installation has started.
 * All typical credentials are set for this platform.
 * **DON'T FORGET TO RUN terraform destroy at the end of your POC**
 * The resources used in this challenge do not belong to the free tier and will cost you. Please plan to team with more people so the cost can be split.
-* Please use a **PERSONAL** account and not the one provided by the company as it might conflic because of VPC.
+* Please use a **PERSONAL** account and not the one provided by the company as it might conflic with security constraints.
